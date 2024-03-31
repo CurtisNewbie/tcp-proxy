@@ -64,7 +64,7 @@ func (p *Pipe) Start() {
 	proxyAddr := p.proxied.RemoteAddr().String()
 	p.pipeBetween(p.client, clientAddr, p.proxied, proxyAddr, func(conn *net.TCPConn) {
 		// pipe may be blocked on proxied.Read, even when the client has been disconnected
-		p.proxied.SetReadDeadline(time.Now().Add(time.Millisecond * 500))
+		p.proxied.SetReadDeadline(time.Now().Add(time.Millisecond * 50))
 	})
 	p.pipeBetween(p.proxied, proxyAddr, p.client, clientAddr, nil)
 }
