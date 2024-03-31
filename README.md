@@ -8,7 +8,7 @@ E.g., Use it as the middle-man between redis server and redis-cli to log the tra
 # redis-server runnning on port 6379
 
 # run tcp-proxy on 6378, and proxy traffic between the client and the redis-server
-go run . -port=6378 -proxy-port=6379
+go run . -port=6378 -proxy-port=6379 -proxy-host=localhost
 
 # client connects to 6378, the proxy
 # redis-cli -p 6378
