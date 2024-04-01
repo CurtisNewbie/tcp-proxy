@@ -47,7 +47,7 @@ func DialTcp(host string, port int) (*net.TCPConn, error) {
 	if err != nil {
 		return nil, err
 	}
-	Debugf("Connected to proxy tcp %s:%d", host, port)
+	Logf("Connected to proxy tcp %s:%d", host, port)
 	return conn.(*net.TCPConn), nil
 }
 
@@ -124,16 +124,11 @@ func NewPipe(client *net.TCPConn, proxied *net.TCPConn) *Pipe {
 	}
 }
 
-func NewProxyHandler(proxied *net.TCPConn) TcpConnHandler {
+func NewProxyHandler(pt ProxyTarget) TcpConnHandler {
 	return func(conn *net.TCPConn) {
-		swapped := atomic.CompareAndSwapInt64(&ConnCount, 0, 1)
-
-		if !swapped {
-			Logf("Connection already occupied, only supports one connection")
-			conn.Close()
-			return
-		}
 		Logf("Accept connection from %v", conn.RemoteAddr().String())
+		cc := atomic.AddInt64(&ConnCount, 1)
+		Logf("Connection Count: %d", cc)
 
 		defer conn.Close()
 		defer func() {
@@ -141,11 +136,25 @@ func NewProxyHandler(proxied *net.TCPConn) TcpConnHandler {
 				Debugf("Connection for %v closed", conn.RemoteAddr().String())
 			}
 		}()
-		defer func() { atomic.AddInt64(&ConnCount, -1) }()
+		defer func() {
+			cc := atomic.AddInt64(&ConnCount, -1)
+			Logf("Connection Count: %d", cc)
+		}()
+
+		proxied, err := DialTcp(pt.Host, pt.Port)
+		if err != nil {
+			panic(err)
+		}
+		defer proxied.Close()
 
 		pipe := NewPipe(conn, proxied)
 		pipe.Start()
 		pipe.Wait()
 		Debugf("Pipe closed")
 	}
+}
+
+type ProxyTarget struct {
+	Host string
+	Port int
 }

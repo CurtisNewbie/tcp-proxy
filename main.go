@@ -24,15 +24,7 @@ func main() {
 		fmt.Println("proxy port is required")
 		return
 	}
-
-	proxied, err := DialTcp(*proxyHost, *proxyPort)
-	if err != nil {
-		panic(err)
-	}
-	defer proxied.Close()
-
-	// though it seems like it can handle more, it actually supports only one connection,
-	err = Listen("localhost", *port, NewProxyHandler(proxied))
+	err := Listen("localhost", *port, NewProxyHandler(ProxyTarget{Host: *proxyHost, Port: *proxyPort}))
 	if err != nil {
 		panic(err)
 	}
