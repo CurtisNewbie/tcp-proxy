@@ -24,6 +24,8 @@ func main() {
 		fmt.Println("proxy port is required")
 		return
 	}
+	fmt.Printf("tcp-proxy version: %v\n", Version)
+
 	err := Listen("localhost", *port, NewProxyHandler(ProxyTarget{Host: *proxyHost, Port: *proxyPort}))
 	if err != nil {
 		panic(err)
