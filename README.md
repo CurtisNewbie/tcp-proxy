@@ -13,3 +13,9 @@ go run . -port=6378 -proxy-port=6379 -proxy-host=localhost
 # client connects to 6378, the proxy
 # redis-cli -p 6378
 ```
+
+E.g., For MySQL
+
+```sh
+tcp-proxy -proxy-port=3306 -port=3307
+```
