@@ -6,12 +6,17 @@ import (
 )
 
 var debug = flag.Bool("debug", false, "enable debug log")
+var host = flag.String("host", "localhost", "listen host")
 var port = flag.Int("port", 0, "host port")
 var proxyHost = flag.String("proxy-host", "localhost", "proxied host")
 var proxyPort = flag.Int("proxy-port", 80, "proxied port")
 
 func main() {
 	flag.Parse()
+	if *host == "" {
+		fmt.Println("host is required")
+		return
+	}
 	if *port == 0 {
 		fmt.Println("port is required")
 		return
@@ -26,7 +31,7 @@ func main() {
 	}
 	fmt.Printf("tcp-proxy version: %v\n", Version)
 
-	err := Listen("localhost", *port, NewProxyHandler(ProxyTarget{Host: *proxyHost, Port: *proxyPort}))
+	err := Listen(*host, *port, NewProxyHandler(ProxyTarget{Host: *proxyHost, Port: *proxyPort}))
 	if err != nil {
 		panic(err)
 	}

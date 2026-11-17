@@ -30,7 +30,7 @@ func Listen(host string, port int, handler TcpConnHandler) error {
 		return fmt.Errorf("failed to listen on tcp %v:%v, %w", host, port, err)
 	}
 	defer listener.Close()
-	fmt.Printf("Server is listening on port %v\n", port)
+	fmt.Printf("Server is listening on %v\n", listener.Addr().String())
 
 	for {
 		conn, err := listener.AcceptTCP()

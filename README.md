@@ -19,3 +19,9 @@ E.g., For MySQL
 ```sh
 tcp-proxy -proxy-port=3306 -port=3307
 ```
+
+By default it listens on `localhost` only. To accept connections from the LAN:
+
+```sh
+tcp-proxy -host=0.0.0.0 -port=6378 -proxy-port=6379
+```
